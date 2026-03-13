@@ -1,0 +1,7 @@
+bounded_context: "platform"
+service_id: "svc-obs-sre"
+application_id: "app.obs.sre"
+data_owner_pattern: "db_obs_sre_prod"
+event_namespace: "evt.obs.telemetry"
+owning_squad: "Observability and SRE Squad"
+wave: "0"
