@@ -7,6 +7,9 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+GRAFANA_USER="${GRAFANA_USER:-admin}"
+GRAFANA_PASSWORD="${GRAFANA_PASSWORD:-}"
+GRAFANA_CREDENTIALS="${GRAFANA_USER}:${GRAFANA_PASSWORD}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -78,7 +81,7 @@ setup_grafana_datasources() {
             "isDefault": true,
             "basicAuth": false
         }' \
-        -u admin:admin \
+        -u "${GRAFANA_CREDENTIALS}" \
         http://localhost:3000/api/datasources || log_warning "Prometheus datasource may already exist"
     
     # Add Elasticsearch datasource
@@ -96,7 +99,7 @@ setup_grafana_datasources() {
                 "esVersion": "8.0.0"
             }
         }' \
-        -u admin:admin \
+        -u "${GRAFANA_CREDENTIALS}" \
         http://localhost:3000/api/datasources || log_warning "Elasticsearch datasource may already exist"
     
     # Add Jaeger datasource
@@ -109,7 +112,7 @@ setup_grafana_datasources() {
             "access": "proxy",
             "basicAuth": false
         }' \
-        -u admin:admin \
+        -u "${GRAFANA_CREDENTIALS}" \
         http://localhost:3000/api/datasources || log_warning "Jaeger datasource may already exist"
     
     log_success "Grafana datasources configured"
@@ -137,7 +140,7 @@ import_grafana_dashboards() {
                     }
                 ]
             }" \
-            -u admin:admin \
+            -u "${GRAFANA_CREDENTIALS}" \
             http://localhost:3000/api/dashboards/import
         
         log_success "Banking overview dashboard imported"
@@ -220,7 +223,7 @@ EOF
     curl -s -X POST \
         -H "Content-Type: application/json" \
         -d @/tmp/system-dashboard.json \
-        -u admin:admin \
+        -u "${GRAFANA_CREDENTIALS}" \
         http://localhost:3000/api/dashboards/db
     
     rm -f /tmp/system-dashboard.json
@@ -310,7 +313,7 @@ EOF
     curl -s -X POST \
         -H "Content-Type: application/json" \
         -d @/tmp/security-dashboard.json \
-        -u admin:admin \
+        -u "${GRAFANA_CREDENTIALS}" \
         http://localhost:3000/api/dashboards/db
     
     rm -f /tmp/security-dashboard.json
@@ -400,7 +403,7 @@ EOF
     curl -s -X POST \
         -H "Content-Type: application/json" \
         -d @/tmp/compliance-dashboard.json \
-        -u admin:admin \
+        -u "${GRAFANA_CREDENTIALS}" \
         http://localhost:3000/api/dashboards/db
     
     rm -f /tmp/compliance-dashboard.json
